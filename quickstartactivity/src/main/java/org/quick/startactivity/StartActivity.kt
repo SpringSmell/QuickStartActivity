@@ -1,6 +1,7 @@
 package org.quick.startactivity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -19,13 +20,19 @@ object StartActivity {
 
     private val requestParamsList = SparseArray<((resultCode: Int, data: Intent?) -> Unit)>()
 
-    private fun startActivity(builder: Builder, onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null) {
+    private fun startActivity(
+        builder: Builder,
+        onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null
+    ) {
         if (onActivityResultListener == null)
-            builder.activity?.startActivity(builder.build())
+            builder.context?.startActivity(builder.build())
         else if (builder.build().component != null) {
             val requestCode = createRequestCode(builder.build().component!!.className)
             requestParamsList.put(requestCode, onActivityResultListener)/*这里是以目的地存储的*/
-            builder.activity?.startActivityForResult(builder.build(), requestCode)
+            if (builder.context is Activity)
+                (builder.context as Activity).startActivityForResult(builder.build(), requestCode)
+            else
+                builder.context?.startActivity(builder.build())
         }
     }
 
@@ -45,15 +52,23 @@ object StartActivity {
 
     fun remove(activity: Activity?) {
         if (activity == null) return
-        requestParamsList.remove(createRequestCode(String.format("%s.%s", activity.packageName, activity.localClassName)))
+        requestParamsList.remove(
+            createRequestCode(
+                String.format(
+                    "%s.%s",
+                    activity.packageName,
+                    activity.localClassName
+                )
+            )
+        )
     }
 
     fun resetInternal() {
         requestParamsList.clear()
     }
 
-    class Builder(var activity: Activity?=null, clazz: Class<*>?=null){
-        var intent: Intent = if (clazz==null) Intent() else Intent(activity,clazz)
+    class Builder(var context: Context? = null, clazz: Class<*>? = null) {
+        var intent: Intent = if (clazz == null) Intent() else Intent(context, clazz)
 
         fun addParams(data: Intent): Builder {
             intent.putExtras(data)
