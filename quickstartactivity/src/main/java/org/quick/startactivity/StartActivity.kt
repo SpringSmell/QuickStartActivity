@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.util.SparseArray
 import androidx.annotation.Size
@@ -136,6 +137,11 @@ object StartActivity {
         }
 
         fun addParams(key: String, value: Serializable): Builder {
+            intent.putExtra(key, value)
+            return this
+        }
+
+        fun addParams(key: String, value: Parcelable): Builder {
             intent.putExtra(key, value)
             return this
         }
