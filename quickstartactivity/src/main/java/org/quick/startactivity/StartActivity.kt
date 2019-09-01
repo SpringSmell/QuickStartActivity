@@ -68,8 +68,8 @@ object StartActivity {
         requestParamsList.clear()
     }
 
-    class Builder(var context: Context? = null, clazz: Class<*>? = null) {
-        var intent: Intent = if (clazz == null) Intent() else Intent(context, clazz)
+    class Builder(var context: Context? = null, cls: Class<*>? = null) {
+        var intent: Intent = if (cls == null) Intent() else Intent(context, cls)
 
         fun addParams(data: Intent): Builder {
             intent.putExtras(data)
