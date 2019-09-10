@@ -14,31 +14,30 @@ import java.io.Serializable
  * @describe 快速简洁的返回startActivityForResult值，以回调的方式使用
  * @author ChrisZou
  * @date 2018/6/14-14:33
- * @from https://github.com/SpringSmell/quick.library
+ * @from https://github.com/SpringSmell/QuickStartActivity
  * @email chrisSpringSmell@gmail.com
  */
 object StartActivity {
 
     private val requestParamsList = SparseArray<((resultCode: Int, data: Intent?) -> Unit)>()
 
-    private fun startActivity(
-        builder: Builder,
-        onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null
-    ) {
+    private fun startActivity(builder: Builder, onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null) {
         if (onActivityResultListener == null)
             builder.context?.startActivity(builder.build())
         else if (builder.build().component != null) {
-            val requestCode = createRequestCode(builder.build().component!!.className)
-            requestParamsList.put(requestCode, onActivityResultListener)/*这里是以目的地存储的*/
             if (builder.context is Activity)
-                (builder.context as Activity).startActivityForResult(builder.build(), requestCode)
+                (builder.context as Activity)
+                    .startActivityForResult(builder.build(), insertListener(builder.build().component.className,onActivityResultListener))
             else
                 builder.context?.startActivity(builder.build())
         }
     }
 
-    private fun createRequestCode(className: String): Int {
-        val hasCodeStr = className.hashCode().toString()
+    /**
+     * 取Hashcode的偶数位，创建RequestCode
+     */
+    private fun createRequestCode(binder: Any): Int {
+        val hasCodeStr = binder.hashCode().toString()
         var tempCode = ""
         for (index in hasCodeStr.length - 1 downTo 0)
             if (index % 2 != 0)
@@ -47,21 +46,24 @@ object StartActivity {
         return if (requestCode > 65536) requestCode / 2 else requestCode
     }
 
+    /**
+     * 插入绑定者
+     * @param binder 绑定者
+     * @param onActivityResultListener 回调监听
+     * @return requestCode
+     */
+    fun insertListener(binder: Any, onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)): Int {
+        val requestCode = createRequestCode(binder)
+        requestParamsList.put(requestCode, onActivityResultListener)/*这里是以目的地存储的*/
+        return requestCode
+    }
+
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         requestParamsList.get(requestCode)?.invoke(resultCode, data)
     }
 
-    fun remove(activity: Activity?) {
-        if (activity == null) return
-        requestParamsList.remove(
-            createRequestCode(
-                String.format(
-                    "%s.%s",
-                    activity.packageName,
-                    activity.localClassName
-                )
-            )
-        )
+    fun remove(binder: Any) {
+        requestParamsList.remove(createRequestCode(binder))
     }
 
     fun resetInternal() {
@@ -170,6 +172,7 @@ object StartActivity {
                 is Int -> value = intent.getIntExtra(key, defaultValue)
                 is Boolean -> value = intent.getBooleanExtra(key, defaultValue)
                 is Serializable -> value = intent.getSerializableExtra(key)
+                is Parcelable -> value = intent.getParcelableExtra(key)
                 is Long -> value = intent.getLongExtra(key, defaultValue)
                 is Float -> value = intent.getFloatExtra(key, defaultValue)
                 is Double -> value = intent.getDoubleExtra(key, defaultValue)

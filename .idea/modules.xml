@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Android-QuickStartActivity.iml" filepath="$PROJECT_DIR$/Android-QuickStartActivity.iml" />
       <module fileurl="file://$PROJECT_DIR$/QuickStartActivity.iml" filepath="$PROJECT_DIR$/QuickStartActivity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/QuickStartActivity-app.iml" filepath="$PROJECT_DIR$/app/QuickStartActivity-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quickstartactivity/QuickStartActivity-quickstartactivity.iml" filepath="$PROJECT_DIR$/quickstartactivity/QuickStartActivity-quickstartactivity.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/quickstartactivity/quickstartactivity.iml" filepath="$PROJECT_DIR$/quickstartactivity/quickstartactivity.iml" />
     </modules>
