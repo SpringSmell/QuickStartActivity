@@ -2,6 +2,7 @@ package org.quick.startactivity
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
@@ -24,19 +25,20 @@ object StartActivity {
     private fun startActivity(builder: Builder, onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null) {
         if (onActivityResultListener == null)
             builder.context?.startActivity(builder.build())
-        else if (builder.build().component != null) {
-            if (builder.context is Activity)
-                (builder.context as Activity)
-                    .startActivityForResult(builder.build(), insertListener(builder.build().component.className,onActivityResultListener))
-            else
-                builder.context?.startActivity(builder.build())
+        else {
+            builder.build().component?.run {
+                if (builder.context is Activity)
+                    (builder.context as Activity).startActivityForResult(builder.build(), insertListener(className, onActivityResultListener))
+                else
+                    builder.context?.startActivity(builder.build())
+            }
         }
     }
 
     /**
      * 取Hashcode的偶数位，创建RequestCode
      */
-    private fun createRequestCode(binder: Any): Int {
+    fun createRequestCode(binder: Any): Int {
         val hasCodeStr = binder.hashCode().toString()
         var tempCode = ""
         for (index in hasCodeStr.length - 1 downTo 0)
@@ -71,7 +73,15 @@ object StartActivity {
     }
 
     class Builder(var context: Context? = null, cls: Class<*>? = null) {
-        var intent: Intent = if (cls == null) Intent() else Intent(context, cls)
+        var intent: Intent =
+            if (cls == null)
+                Intent()
+            else
+                Intent(context, cls).apply {
+                    if (context !is Activity) {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                }
 
         fun addParams(data: Intent): Builder {
             intent.putExtras(data)
@@ -148,7 +158,7 @@ object StartActivity {
             return this
         }
 
-        fun action(onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null) {
+        fun navigation(onActivityResultListener: ((resultCode: Int, data: Intent?) -> Unit)? = null) {
             startActivity(this, onActivityResultListener)
         }
 
@@ -178,6 +188,7 @@ object StartActivity {
                 is Double -> value = intent.getDoubleExtra(key, defaultValue)
                 is java.util.ArrayList<*> -> value = intent.getStringArrayListExtra(key)
                 is Bundle -> value = intent.getBundleExtra(key)
+                is Class<*> -> defaultValue.newInstance() as T
             }
         } catch (o_O: Exception) {
             value = defaultValue

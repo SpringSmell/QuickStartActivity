@@ -7,6 +7,9 @@
       <module fileurl="file://$PROJECT_DIR$/app/QuickStartActivity-app.iml" filepath="$PROJECT_DIR$/app/QuickStartActivity-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/quickstartactivity/QuickStartActivity-quickstartactivity.iml" filepath="$PROJECT_DIR$/quickstartactivity/QuickStartActivity-quickstartactivity.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/project-QuickStartActivity.iml" filepath="$PROJECT_DIR$/project-QuickStartActivity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/project-QuickStartActivity-app.iml" filepath="$PROJECT_DIR$/app/project-QuickStartActivity-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quickstartactivity/project-QuickStartActivity-quickstartactivity.iml" filepath="$PROJECT_DIR$/quickstartactivity/project-QuickStartActivity-quickstartactivity.iml" />
       <module fileurl="file://$PROJECT_DIR$/quickstartactivity/quickstartactivity.iml" filepath="$PROJECT_DIR$/quickstartactivity/quickstartactivity.iml" />
     </modules>
   </component>
